@@ -1,6 +1,6 @@
 "use client";
 
-import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaPinterest } from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaInstagram, FaYoutube, FaPinterest, FaArrowAltCircleRight } from "react-icons/fa";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,14 +35,15 @@ export default function LandingPage() {
           {/* Actions (Login/Sign Up) */}
           <div className="hidden md:flex space-x-4 items-center">
             <Link
-              href="/login"
-              className="text-[#2d3250] hover:underline font-medium"
+              href="/auth"
+              className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-2 rounded-md flex items-center space-x-4"
             >
-              Login
+              <span className="font-semibold">Login</span>
+              <FaArrowAltCircleRight />
             </Link>
-            <Button className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-2 rounded-md">
+            {/* <Button className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-2 rounded-md">
               Sign Up
-            </Button>
+            </Button> */}
           </div>
 
           {/* Burger Menu (Mobile) */}
@@ -134,7 +135,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="bg-white py-12">
+      <section id="features" className="bg-white py-14 my-1">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-[#2d3250] mb-8">
             Key Features for Internal Operations
@@ -189,7 +190,7 @@ export default function LandingPage() {
       </section>
 
       {/* Contact / Call-to-Action Section */}
-      <section id="contact" className="bg-white py-12">
+      {/* <section id="contact" className="bg-white py-12">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-[#2d3250] mb-4">
             Ready to Get Started?
@@ -209,7 +210,7 @@ export default function LandingPage() {
             </Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="bg-[#2d3250] text-white py-10">
@@ -247,7 +248,7 @@ export default function LandingPage() {
 
           {/* Country & Currency */}
           <p className="text-sm text-gray-300">
-            United Kingdom
+            Bandung | West Java
           </p>
         </div>
       </footer>
