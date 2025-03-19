@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { AlertDialogDelete } from "@/components/alert-dialog-delete";
+import { DatePicker } from "@/components/date-picker";
 
 interface StockIn {
     _id?: string;
@@ -45,6 +47,8 @@ export default function StockInPage() {
     });
     const [isEditing, setIsEditing] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [deletedId, setDeletedId] = useState("");
 
     const fetchStockIn = useCallback(async () => {
         try {
@@ -121,11 +125,13 @@ export default function StockInPage() {
         try {
             await fetch(`/api/stock-in/${id}`, { method: "DELETE" });
             toast("Stock In dihapus!");
-            fetchStockIn();
         } catch (error) {
             console.log("Error : ", error);
             toast.error("Gagal menghapus!");
         }
+        fetchStockIn();
+        setDeletedId("");
+        setIsDeleteDialogOpen(false);
     }
 
     console.log("STOCK IN : ", stockInList);
@@ -158,7 +164,7 @@ export default function StockInPage() {
                     {stockInList
                         .filter((item) =>
                             typeof item.rawMaterial === "object" && item.rawMaterial?.name.toLowerCase().includes(search.toLowerCase())
-                        )                    
+                        )
                         .map((item) => (
                             <TableRow key={item._id}>
                                 <TableCell>{typeof item.rawMaterial === "object" ? item.rawMaterial?.name : "-"}</TableCell>
@@ -179,7 +185,8 @@ export default function StockInPage() {
                                     </Button>
                                     <Button size="icon" variant="destructive" onClick={() => {
                                         if (!item._id) return;
-                                        handleDelete(item._id);
+                                        setDeletedId(item._id);
+                                        setIsDeleteDialogOpen(true);
                                     }}>
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -214,11 +221,21 @@ export default function StockInPage() {
                         <Label>Draft In</Label><Input name="draftIn" value={form.draftIn} onChange={handleChange} required />
                         <Label>DO Supplier No</Label><Input name="doSupplierNo" value={form.doSupplierNo} onChange={handleChange} required />
                         <Label>Destination Location</Label><Input name="destinationLocation" value={form.destinationLocation} onChange={handleChange} required />
-                        <Label>Tanggal Diterima</Label><Input name="forceDate" type="date" value={form.forceDate ? new Date(form.forceDate).toISOString().split("T")[0] : ""} onChange={handleChange} required />
+                        <Label>Tanggal Diterima</Label>
+                        <DatePicker 
+                            value={form.forceDate} 
+                            onChange={(date) => setForm({ ...form, forceDate: date })} 
+                        />
                         <Button type="submit" className="w-full">{isEditing ? "Update" : "Simpan"}</Button>
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <AlertDialogDelete
+                isOpen={isDeleteDialogOpen}
+                setIsOpen={setIsDeleteDialogOpen}
+                onConfirm={() => handleDelete(deletedId)}
+            />
         </div>
     );
 }

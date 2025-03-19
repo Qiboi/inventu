@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { AlertDialogDelete } from "@/components/alert-dialog-delete";
 
 interface RawMaterial {
     _id?: string;
@@ -30,6 +31,8 @@ export default function RawMaterialsPage() {
     });
     const [isEditing, setIsEditing] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [deletedId, setDeletedId] = useState("");
 
     const fetchRawMaterials = useCallback(async () => {
         try {
@@ -92,11 +95,13 @@ export default function RawMaterialsPage() {
         try {
             await fetch(`/api/raw-materials/${id}`, { method: "DELETE" });
             toast("Bahan baku dihapus!");
-            fetchRawMaterials();
         } catch (error) {
             console.log("Error : ", error);
             toast.error("Gagal menghapus!");
         }
+        fetchRawMaterials();
+        setDeletedId("");
+        setIsDeleteDialogOpen(false);
     }
 
     return (
@@ -147,7 +152,8 @@ export default function RawMaterialsPage() {
                                     <Button size="icon" variant="destructive"
                                         onClick={() => {
                                             if (!item._id) return; // Jika _id tidak ada, keluar dari fungsi
-                                            handleDelete(item._id);
+                                            setDeletedId(item._id);
+                                            setIsDeleteDialogOpen(true);
                                         }}
                                     >
                                         <Trash2 className="h-4 w-4" />
@@ -173,6 +179,12 @@ export default function RawMaterialsPage() {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            <AlertDialogDelete
+                isOpen={isDeleteDialogOpen}
+                setIsOpen={setIsDeleteDialogOpen}
+                onConfirm={() => handleDelete(deletedId)}
+            />
         </div>
     );
 }
