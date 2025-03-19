@@ -89,27 +89,29 @@ export default function LandingPage() {
               >
                 Features
               </Link>
-              <Link
+              {/* <Link
                 href="#contact"
                 className="py-2 text-[#2d3250] font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Dashboard
-              </Link>
-              <Link
-                href="/login"
-                className="py-2 text-[#2d3250] font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
+              </Link> */}
+              {session && (
+                <Link
+                  href="/auth"
+                  className="py-2 text-[#2d3250] font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+              {/* <Link
                 href="/signup"
                 className="py-2 text-[#2d3250] font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Sign Up
-              </Link>
+              </Link> */}
             </nav>
           </div>
         )}

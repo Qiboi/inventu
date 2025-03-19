@@ -7,7 +7,7 @@ import {
   ClipboardList,
   // Boxes,
   // Fuel,
-  // ArrowDownCircle,
+  ArrowDownCircle,
   // ArrowUpCircle,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -53,18 +53,18 @@ const data = {
     //   icon: Fuel,
     // },
   ],
-  // navStock: [
-  //   {
-  //     title: "Stok In",
-  //     url: "/dashboard/stock-in",
-  //     icon: ArrowDownCircle,
-  //   },
-  //   {
-  //     title: "Stok Out",
-  //     url: "/dashboard/stock-out",
-  //     icon: ArrowUpCircle,
-  //   },
-  // ],
+  navStock: [
+    {
+      title: "Stok In",
+      url: "/dashboard/stock-in",
+      icon: ArrowDownCircle,
+    },
+    // {
+    //   title: "Stok Out",
+    //   url: "/dashboard/stock-out",
+    //   icon: ArrowUpCircle,
+    // },
+  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -102,10 +102,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <NavMain items={data.navMain} />
         </SidebarGroup>
-        {/* <SidebarGroup>
+        <SidebarGroup>
           <SidebarGroupLabel>Manajemen Stok</SidebarGroupLabel>
           <NavMain items={data.navStock} />
-        </SidebarGroup> */}
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
