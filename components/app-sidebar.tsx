@@ -33,7 +33,7 @@ const data = {
       isActive: true,
     },
     {
-      title: "Bahan Baku",
+      title: "Raw Material",
       url: "/dashboard/raw-materials",
       icon: ClipboardList,
     },
@@ -55,7 +55,7 @@ const data = {
   ],
   navStock: [
     {
-      title: "Stok In",
+      title: "Stock In",
       url: "/dashboard/stock-in",
       icon: ArrowDownCircle,
     },

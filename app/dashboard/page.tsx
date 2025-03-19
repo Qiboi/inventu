@@ -35,7 +35,7 @@ export default function DashboardPage() {
       {/* Card Bahan Baku */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Bahan Baku</CardTitle>
+          <CardTitle>Raw Materials</CardTitle>
           <Package className="h-8 w-8 text-muted-foreground" />
         </CardHeader>
         <CardContent>

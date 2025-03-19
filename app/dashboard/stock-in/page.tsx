@@ -142,22 +142,22 @@ export default function StockInPage() {
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Stock In</h1>
                 <Button variant="default" onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-5 w-5" /> Tambah Stock In
+                    <Plus className="mr-2 h-5 w-5" /> Add Stock In
                 </Button>
             </div>
-            <Input placeholder="Cari stock in..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input placeholder="Search stock in..." value={search} onChange={(e) => setSearch(e.target.value)} />
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Nama Produk</TableHead>
+                        <TableHead>Product Name</TableHead>
                         <TableHead>Quantity</TableHead>
                         <TableHead>Supplier</TableHead>
                         <TableHead>Supplier Address</TableHead>
                         <TableHead>Draft In</TableHead>
                         <TableHead>DO Supplier No</TableHead>
                         <TableHead>Destination Location</TableHead>
-                        <TableHead>Tanggal Diterima</TableHead>
-                        <TableHead>Aksi</TableHead>
+                        <TableHead>Force Date</TableHead>
+                        <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -199,10 +199,10 @@ export default function StockInPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEditing ? "Edit Stock In" : "Tambah Stock In"}</DialogTitle>
+                        <DialogTitle>{isEditing ? "Edit Stock In" : "Add Stock In"}</DialogTitle>
                     </DialogHeader>
                     <form className="space-y-4" onSubmit={handleSubmit}>
-                        <Label>Nama Produk</Label>
+                        <Label>Product Name</Label>
                         <Select onValueChange={handleSelectChange} value={typeof form.rawMaterial === "object" ? form.rawMaterial._id : form.rawMaterial || ""}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Pilih bahan baku" />
@@ -221,12 +221,12 @@ export default function StockInPage() {
                         <Label>Draft In</Label><Input name="draftIn" value={form.draftIn} onChange={handleChange} required />
                         <Label>DO Supplier No</Label><Input name="doSupplierNo" value={form.doSupplierNo} onChange={handleChange} required />
                         <Label>Destination Location</Label><Input name="destinationLocation" value={form.destinationLocation} onChange={handleChange} required />
-                        <Label>Tanggal Diterima</Label>
+                        <Label>Force Date</Label>
                         <DatePicker 
                             value={form.forceDate} 
                             onChange={(date) => setForm({ ...form, forceDate: date })} 
                         />
-                        <Button type="submit" className="w-full">{isEditing ? "Update" : "Simpan"}</Button>
+                        <Button type="submit" className="w-full">{isEditing ? "Update" : "Save"}</Button>
                     </form>
                 </DialogContent>
             </Dialog>

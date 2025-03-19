@@ -56,7 +56,7 @@ export default function RawMaterialsPage() {
         const { name, value } = e.target;
         setForm((prev) => ({
             ...prev,
-            [name]: name === "stock" ? Number(value) : value, // Pastikan stok adalah number
+            [name]: name === "stock" ? Number(value) : value, // Ensure stock is a number
         }));
     }
 
@@ -73,31 +73,26 @@ export default function RawMaterialsPage() {
                 body: JSON.stringify(form),
             });
 
-            if (!response.ok) throw new Error("Gagal menyimpan data.");
+            if (!response.ok) throw new Error("Failed to save data.");
 
-            toast.success(isEditing ? "Data diperbarui!" : "Bahan baku ditambahkan!");
+            toast.success(isEditing ? "Data updated!" : "Raw material added!");
             fetchRawMaterials();
             setIsDialogOpen(false);
             setForm({ name: "", category: "", unit: "", stock: 0, label: "" });
             setIsEditing(false);
         } catch (error) {
             console.log("Error : ", error);
-            toast.error("Terjadi kesalahan!");
+            toast.error("An error occurred!");
         }
     }
-
-    // function handleEdit(item: RawMaterial) {
-    //     setForm({ ...item }); // Ini akan menyertakan _id saat edit
-    //     setIsEditing(true);
-    // }
 
     async function handleDelete(id: string) {
         try {
             await fetch(`/api/raw-materials/${id}`, { method: "DELETE" });
-            toast("Bahan baku dihapus!");
+            toast("Raw material deleted!");
         } catch (error) {
             console.log("Error : ", error);
-            toast.error("Gagal menghapus!");
+            toast.error("Failed to delete!");
         }
         fetchRawMaterials();
         setDeletedId("");
@@ -107,28 +102,28 @@ export default function RawMaterialsPage() {
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Bahan Baku</h1>
+                <h1 className="text-2xl font-bold">Raw Materials</h1>
                 <Button variant="default" onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-5 w-5" /> Tambah Bahan Baku
+                    <Plus className="mr-2 h-5 w-5" /> Add Raw Material
                 </Button>
             </div>
-            <Input placeholder="Cari bahan baku..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input placeholder="Search raw materials..." value={search} onChange={(e) => setSearch(e.target.value)} />
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Nama</TableHead>
-                        <TableHead>Kategori</TableHead>
-                        <TableHead>Satuan</TableHead>
-                        <TableHead>Stok</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Unit</TableHead>
+                        <TableHead>Stock</TableHead>
                         <TableHead>Label</TableHead>
-                        <TableHead>Aksi</TableHead>
+                        <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {rawMaterials
                         .filter((item) =>
                             item.name.toLowerCase().includes(search.toLowerCase()) ||
-                            item.label.toLowerCase().includes(search.toLowerCase()) // Tambahkan pencarian berdasarkan label
+                            item.label.toLowerCase().includes(search.toLowerCase())
                         )
                         .map((item) => (
                             <TableRow key={item._id}>
@@ -144,14 +139,14 @@ export default function RawMaterialsPage() {
                                         onClick={() => {
                                             setForm(item);
                                             setIsEditing(true);
-                                            setIsDialogOpen(true); // Pastikan dialog terbuka
+                                            setIsDialogOpen(true);
                                         }}
                                     >
                                         <Edit className="h-4 w-4" />
                                     </Button>
                                     <Button size="icon" variant="destructive"
                                         onClick={() => {
-                                            if (!item._id) return; // Jika _id tidak ada, keluar dari fungsi
+                                            if (!item._id) return;
                                             setDeletedId(item._id);
                                             setIsDeleteDialogOpen(true);
                                         }}
@@ -167,15 +162,15 @@ export default function RawMaterialsPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEditing ? "Edit Bahan Baku" : "Tambah Bahan Baku"}</DialogTitle>
+                        <DialogTitle>{isEditing ? "Edit Raw Material" : "Add Raw Material"}</DialogTitle>
                     </DialogHeader>
                     <form className="space-y-4" onSubmit={handleSubmit}>
-                        <Label>Nama Bahan</Label><Input name="name" value={form.name} onChange={handleChange} required />
-                        <Label>Kategori</Label><Input name="category" value={form.category} onChange={handleChange} required />
-                        <Label>Satuan</Label><Input name="unit" value={form.unit} onChange={handleChange} required />
-                        <Label>Stok</Label><Input name="stock" type="number" value={form.stock} onChange={handleChange} required />
+                        <Label>Raw Material Name</Label><Input name="name" value={form.name} onChange={handleChange} required />
+                        <Label>Category</Label><Input name="category" value={form.category} onChange={handleChange} required />
+                        <Label>Unit</Label><Input name="unit" value={form.unit} onChange={handleChange} required />
+                        <Label>Stock</Label><Input name="stock" type="number" value={form.stock} onChange={handleChange} required />
                         <Label>Label</Label><Input name="label" value={form.label} onChange={handleChange} required />
-                        <Button type="submit" className="w-full">{isEditing ? "Update" : "Simpan"}</Button>
+                        <Button type="submit" className="w-full">{isEditing ? "Update" : "Save"}</Button>
                     </form>
                 </DialogContent>
             </Dialog>
