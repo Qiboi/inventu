@@ -1,14 +1,14 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
+  // BadgeCheck,
+  // Bell,
   ChevronsUpDown,
-  CreditCard,
+  // CreditCard,
   LogOut,
-  Sparkles,
+  // Sparkles,
 } from "lucide-react"
-
+import { signOut } from "next-auth/react";
 import {
   Avatar,
   AvatarFallback,
@@ -17,7 +17,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
+  // DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -40,6 +40,10 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  // Fungsi logout
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/auth" }); // Redirect ke halaman login setelah logout
+  };
 
   return (
     <SidebarMenu>
@@ -79,7 +83,7 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
@@ -100,9 +104,9 @@ export function NavUser({
                 <Bell />
                 Notifications
               </DropdownMenuItem>
-            </DropdownMenuGroup>
+            </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut />
               Log out
             </DropdownMenuItem>

@@ -26,6 +26,7 @@ export const authOptions: NextAuthOptions = {
         const data = {
           email: credentials.email,
           password: credentials.password,
+          avatar: "/avatars/default.jpg",
         };
         const formData = toFormData(data);
         try {

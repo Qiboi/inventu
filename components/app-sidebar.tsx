@@ -1,175 +1,116 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
+import Image from "next/image";
 import {
-  // AudioWaveform,
-  BookOpen,
-  Bot,
-  // Command,
-  Frame,
-  // GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-// import { TeamSwitcher } from "@/components/team-switcher"
+  Package,
+  ClipboardList,
+  // Boxes,
+  // Fuel,
+  // ArrowDownCircle,
+  // ArrowUpCircle,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+  SidebarGroup,
+  SidebarGroupLabel,
+} from "@/components/ui/sidebar";
 
-// This is sample data.
+// Data Sidebar
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  // teams: [
-  //   {
-  //     name: "Acme Inc",
-  //     logo: GalleryVerticalEnd,
-  //     plan: "Enterprise",
-  //   },
-  //   {
-  //     name: "Acme Corp.",
-  //     logo: AudioWaveform,
-  //     plan: "Startup",
-  //   },
-  //   {
-  //     name: "Evil Corp.",
-  //     logo: Command,
-  //     plan: "Free",
-  //   },
-  // ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: Package,
       isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      title: "Bahan Baku",
+      url: "/dashboard/raw-materials",
+      icon: ClipboardList,
     },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
+    // {
+    //   title: "ATK",
+    //   url: "/dashboard/atk",
+    //   icon: Boxes,
+    // },
+    // {
+    //   title: "Inventaris",
+    //   url: "/dashboard/inventaris",
+    //   icon: Package,
+    // },
+    // {
+    //   title: "Bahan Bakar Oil",
+    //   url: "/dashboard/oil",
+    //   icon: Fuel,
+    // },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
+  // navStock: [
+  //   {
+  //     title: "Stok In",
+  //     url: "/dashboard/stock-in",
+  //     icon: ArrowDownCircle,
+  //   },
+  //   {
+  //     title: "Stok Out",
+  //     url: "/dashboard/stock-out",
+  //     icon: ArrowUpCircle,
+  //   },
+  // ],
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+
+  // Ambil data pengguna dari sesi
+  const user = session?.user
+    ? {
+      name: session.user.name || "User",
+      email: session.user.email || "user@example.com",
+      avatar: session.user.avatar || "/avatars/default.jpg",
+    }
+    : {
+      name: "Guest",
+      email: "guest@example.com",
+      avatar: "/avatars/default.jpg",
+    };
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {/* <TeamSwitcher teams={data.teams} /> */}
+        <div className="flex justify-center">
+          <Image
+            src="/image/logo-white.png"
+            alt="Inventu Logo"
+            width={120}
+            height={120}
+            className="object-contain"
+          />
+        </div>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {/* Menu Utama */}
+        {/* Grup Stok */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <NavMain items={data.navMain} />
+        </SidebarGroup>
+        {/* <SidebarGroup>
+          <SidebarGroupLabel>Manajemen Stok</SidebarGroupLabel>
+          <NavMain items={data.navStock} />
+        </SidebarGroup> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

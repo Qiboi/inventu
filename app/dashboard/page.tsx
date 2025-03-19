@@ -1,80 +1,84 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { AppSidebar } from "@/components/app-sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import Head from "next/head";
-import { Button } from "@/components/ui/button";
+  Package,
+  //  PenTool, 
+  //  Archive, 
+  //  Fuel 
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  const [totalRawMaterials, setTotalRawMaterials] = useState(0);
 
-  // Tampilkan loading state saat session sedang dimuat
-  if (status === "loading") return <p>Loading...</p>;
 
-  // Jika tidak ada session, arahkan ke halaman login
-  if (!session) {
-    router.push("/auth");
-    return null;
-  }
+  useEffect(() => {
+    async function fetchRawMaterials() {
+      try {
+        const response = await fetch("/api/raw-materials");
+        const { data } = await response.json();
+
+        if (Array.isArray(data)) {
+          setTotalRawMaterials(data.length);
+        }
+      } catch (error) {
+        console.error("Error fetching raw materials:", error);
+      }
+    }
+
+    fetchRawMaterials();
+  }, []);
 
   return (
-    <SidebarProvider>
-      <Head>
-        <title>Dashboard | Projectmu</title>
-      </Head>
-      <AppSidebar />
-      <SidebarInset>
-        {/* Header */}
-        <header className="flex h-16 shrink-0 items-center gap-4 px-6 bg-white">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Overview</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div className="ml-auto">
-            <Button
-              variant="outline"
-              onClick={() => signOut({ callbackUrl: "/auth" })}
-            >
-              Logout
-            </Button>
-          </div>
-        </header>
+    <div className="grid gap-6 md:grid-cols-4">
+      {/* Card Bahan Baku */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Bahan Baku</CardTitle>
+          <Package className="h-8 w-8 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold">{totalRawMaterials}</p>
+          <p className="text-sm text-muted-foreground">Total Items</p>
+        </CardContent>
+      </Card>
 
-        {/* Konten Dashboard */}
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+      {/* Card ATK */}
+      {/* <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>ATK</CardTitle>
+          <PenTool className="h-8 w-8 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold">75</p>
+          <p className="text-sm text-muted-foreground">Total Items</p>
+        </CardContent>
+      </Card> */}
+
+      {/* Card Inventaris */}
+      {/* <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Inventaris</CardTitle>
+          <Archive className="h-8 w-8 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold">45</p>
+          <p className="text-sm text-muted-foreground">Total Items</p>
+        </CardContent>
+      </Card> */}
+
+      {/* Card Bahan Bakar Oil */}
+      {/* <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Bahan Bakar Oil</CardTitle>
+          <Fuel className="h-8 w-8 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <p className="text-3xl font-bold">30</p>
+          <p className="text-sm text-muted-foreground">Total Liters</p>
+        </CardContent>
+      </Card> */}
+    </div>
   );
 }

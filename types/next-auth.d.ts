@@ -10,6 +10,7 @@ declare module "next-auth" {
     exp:number;
     iat:number;
     jti:string;
+    avatar?: string;
 
   }
 
