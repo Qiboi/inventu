@@ -20,10 +20,10 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, category, unit, stock, supplier, address, label } =
+    const { name, category, unit, stock, label } =
       await req.json();
 
-    if (!name || !category || !unit || !stock || !supplier || !address) {
+    if (!name || !category || !unit || !stock || !label) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
         { status: 400 }
@@ -35,8 +35,6 @@ export async function POST(req: NextRequest) {
       category,
       unit,
       stock,
-      supplier,
-      address,
       label,
     });
 

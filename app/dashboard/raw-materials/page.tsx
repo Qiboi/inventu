@@ -15,8 +15,6 @@ interface RawMaterial {
     category: string;
     unit: string;
     stock: number;
-    supplier: string;
-    address: string;
     label: string;
 }
 
@@ -28,8 +26,6 @@ export default function RawMaterialsPage() {
         category: "",
         unit: "",
         stock: 0,
-        supplier: "",
-        address: "",
         label: "",
     });
     const [isEditing, setIsEditing] = useState(false);
@@ -79,7 +75,7 @@ export default function RawMaterialsPage() {
             toast.success(isEditing ? "Data diperbarui!" : "Bahan baku ditambahkan!");
             fetchRawMaterials();
             setIsDialogOpen(false);
-            setForm({ name: "", category: "", unit: "", stock: 0, supplier: "", address: "", label: "" });
+            setForm({ name: "", category: "", unit: "", stock: 0, label: "" });
             setIsEditing(false);
         } catch (error) {
             console.log("Error : ", error);
@@ -119,8 +115,6 @@ export default function RawMaterialsPage() {
                         <TableHead>Kategori</TableHead>
                         <TableHead>Satuan</TableHead>
                         <TableHead>Stok</TableHead>
-                        <TableHead>Supplier</TableHead>
-                        <TableHead>Alamat</TableHead>
                         <TableHead>Label</TableHead>
                         <TableHead>Aksi</TableHead>
                     </TableRow>
@@ -137,8 +131,6 @@ export default function RawMaterialsPage() {
                                 <TableCell>{item.category}</TableCell>
                                 <TableCell>{item.unit}</TableCell>
                                 <TableCell>{item.stock}</TableCell>
-                                <TableCell>{item.supplier}</TableCell>
-                                <TableCell>{item.address}</TableCell>
                                 <TableCell>{item.label}</TableCell>
                                 <TableCell className="flex space-x-2">
                                     <Button
@@ -176,8 +168,6 @@ export default function RawMaterialsPage() {
                         <Label>Kategori</Label><Input name="category" value={form.category} onChange={handleChange} required />
                         <Label>Satuan</Label><Input name="unit" value={form.unit} onChange={handleChange} required />
                         <Label>Stok</Label><Input name="stock" type="number" value={form.stock} onChange={handleChange} required />
-                        <Label>Supplier</Label><Input name="supplier" value={form.supplier} onChange={handleChange} required />
-                        <Label>Alamat</Label><Input name="address" value={form.address} onChange={handleChange} required />
                         <Label>Label</Label><Input name="label" value={form.label} onChange={handleChange} required />
                         <Button type="submit" className="w-full">{isEditing ? "Update" : "Simpan"}</Button>
                     </form>

@@ -5,7 +5,10 @@ import RawMaterial from "@/models/RawMaterial";
 connectDB();
 
 // GET: Ambil satu bahan baku berdasarkan ID
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> 
+}) {
   try {
     const { id } = await params;
     const rawMaterial = await RawMaterial.findById(id);
@@ -27,15 +30,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 // PUT: Update bahan baku berdasarkan ID
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(
+  req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> 
+}) {
   try {
     const { id } = await params;
-    const { name, category, unit, stock, supplier, address, label } =
+    const { name, category, unit, stock, label } =
       await req.json();
 
     const updatedMaterial = await RawMaterial.findByIdAndUpdate(
       id,
-      { name, category, unit, stock, supplier, address, label },
+      { name, category, unit, stock, label },
       { new: true, runValidators: true }
     );
 
@@ -60,7 +66,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 }
 
 // DELETE: Hapus bahan baku berdasarkan ID
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> 
+}) {
   try {
     const { id } = await params;
     const deletedMaterial = await RawMaterial.findByIdAndDelete(id);
