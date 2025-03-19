@@ -5,6 +5,7 @@ import { LoginForm } from "@/components/login-form";
 import { SignUpForm } from "@/components/sign-up-form";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 export default function AuthPage() {
 
@@ -31,7 +32,10 @@ export default function AuthPage() {
     });
     console.log("SignIn result:", result);
     if (result?.ok) {
+      toast.success("Logged In successfully!");
       window.location.href = result.url || "/dashboard";
+    } else {
+      toast.error("Login failed!");
     }
   };
 
@@ -65,9 +69,11 @@ export default function AuthPage() {
           callbackUrl: "/dashboard",
         });
         if (result?.ok) {
+          toast.success("Signed Up successfully!");
           window.location.href = result.url || "/dashboard";
         }
       } else {
+        toast.error("Sign Up failed!");
         setSignupError(data.message || "Sign up failed");
       }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

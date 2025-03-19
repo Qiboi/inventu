@@ -1,5 +1,6 @@
 "use client";
 
+import NextTopLoader from "nextjs-toploader";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   SidebarInset,
@@ -11,7 +12,6 @@ import { Separator } from "@/components/ui/separator";
 // import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Toaster } from "@/components/ui/sonner";
 import { DynamicBreadcrumb } from "@/components/dyniamic-breadcrumb";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
 
   // Tampilkan loading state saat session sedang dimuat
-  if (status === "loading") return <p>Loading...</p>;
+  if (status === "loading") {
+    return null; // Tidak perlu skeleton, progress bar akan jalan otomatis
+  }
 
   // Jika tidak ada session, arahkan ke halaman login
   if (!session) {
@@ -29,6 +31,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <>
+    <NextTopLoader 
+        color="#2563eb" 
+        initialPosition={0.08} 
+        crawlSpeed={200} 
+        height={3} 
+        showSpinner={false} 
+        easing="ease"
+        speed={500}
+      />
+
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -51,7 +63,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
         </SidebarInset>
       </SidebarProvider>
-      <Toaster />
     </>
   );
 }
