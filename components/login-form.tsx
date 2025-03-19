@@ -1,16 +1,34 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { FC } from "react";
 
 interface LoginFormProps extends React.ComponentProps<"form"> {
   onSwitchToSignUp: () => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  password: string;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const LoginForm: FC<LoginFormProps> = ({ className, onSwitchToSignUp, ...props }) => {
+export const LoginForm: FC<LoginFormProps> = ({
+  className,
+  onSwitchToSignUp,
+  onSubmit,
+  email,
+  setEmail,
+  password,
+  setPassword,
+  ...props
+}) => {
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+    >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold text-[#2d3250]">
           Login to Inventu
@@ -21,18 +39,24 @@ export const LoginForm: FC<LoginFormProps> = ({ className, onSwitchToSignUp, ...
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email" className="text-[#2d3250]">Email</Label>
-          <Input 
-            id="email" 
-            type="email" 
-            placeholder="m@example.com" 
-            required 
+          <Label htmlFor="email" className="text-[#2d3250]">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="border border-gray-300 focus:border-[#f9b17a] focus:ring-1 focus:ring-[#f9b17a]"
           />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-[#2d3250]">Password</Label>
+            <Label htmlFor="password" className="text-[#2d3250]">
+              Password
+            </Label>
             <a
               href="#"
               className="text-sm text-[#2d3250] underline underline-offset-4 hover:text-[#f9b17a]"
@@ -40,16 +64,18 @@ export const LoginForm: FC<LoginFormProps> = ({ className, onSwitchToSignUp, ...
               Forgot your password?
             </a>
           </div>
-          <Input 
-            id="password" 
-            type="password" 
+          <Input
+            id="password"
+            type="password"
             placeholder="Your password"
-            required 
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="border border-gray-300 focus:border-[#f9b17a] focus:ring-1 focus:ring-[#f9b17a]"
           />
         </div>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full bg-[#f9b17a] hover:bg-[#e8a066] text-white cursor-pointer transition-colors duration-300"
         >
           Login
@@ -66,5 +92,5 @@ export const LoginForm: FC<LoginFormProps> = ({ className, onSwitchToSignUp, ...
         </button>
       </div>
     </form>
-  )
-}
+  );
+};

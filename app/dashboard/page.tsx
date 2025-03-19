@@ -1,10 +1,38 @@
+"use client";
+
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import Head from "next/head";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Tampilkan loading state saat session sedang dimuat
+  if (status === "loading") return <p>Loading...</p>;
+
+  // Jika tidak ada session, arahkan ke halaman login
+  if (!session) {
+    router.push("/auth");
+    return null;
+  }
+
   return (
     <SidebarProvider>
       <Head>
@@ -27,8 +55,17 @@ export default function DashboardPage() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <div className="ml-auto">
+            <Button
+              variant="outline"
+              onClick={() => signOut({ callbackUrl: "/auth" })}
+            >
+              Logout
+            </Button>
+          </div>
         </header>
 
+        {/* Konten Dashboard */}
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">
             <div className="aspect-video rounded-xl bg-muted/50" />

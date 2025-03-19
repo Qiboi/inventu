@@ -6,8 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useSession, signOut } from "next-auth/react";
 
 export default function LandingPage() {
+
+  const { data: session } = useSession(); // Ambil data login
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -29,18 +32,35 @@ export default function LandingPage() {
           {/* Navigation (Desktop) */}
           <nav className="hidden md:flex space-x-6 text-[#2d3250] font-medium">
             <Link href="#features">Features</Link>
-            <Link href="#contact">Dashboard</Link>
+            {session && ( // Hanya tampilkan jika user sudah login
+            <Link href="/dashboard">Dashboard</Link>
+          )}
           </nav>
 
           {/* Actions (Login/Sign Up) */}
           <div className="hidden md:flex space-x-4 items-center">
+          {session ? (
+            // Jika user sudah login, tampilkan nama mereka
+            <div className="relative group">
+              <button className="flex items-center space-x-2 bg-[#f9b17a] text-white px-5 py-2 rounded-md">
+                <span className="font-semibold">{session.user?.name}</span>
+              </button>
+              <div className="absolute hidden group-hover:block bg-white shadow-md rounded-md p-2 right-0">
+                <button onClick={() => signOut()} className="px-4 py-2 text-red-500">
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            // Jika belum login, tampilkan tombol login
             <Link
               href="/auth"
-              className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-2 rounded-md flex items-center space-x-4"
+              className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-2 rounded-md flex items-center space-x-2"
             >
               <span className="font-semibold">Login</span>
               <FaArrowAltCircleRight />
             </Link>
+          )}
             {/* <Button className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-2 rounded-md">
               Sign Up
             </Button> */}
@@ -109,9 +129,9 @@ export default function LandingPage() {
               Manage your inventory and warehouse operations internally with ease.
             </p>
             <div className="flex space-x-4">
-              <Button className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-3 rounded-md transition-all duration-300">
-                Access Dashboard
-              </Button>
+            <Button asChild className="bg-[#f9b17a] hover:bg-[#e8a066] text-white px-5 py-3 rounded-md">
+                <Link href="/dashboard">Access Dashboard</Link>
+            </Button>
               <Button
                 variant="outline"
                 className="border-[#f9b17a] text-[#f9b17a] px-5 py-3 rounded-md hover:bg-[#f9b17a]/10 transition-all duration-300"
@@ -129,6 +149,7 @@ export default function LandingPage() {
               width={600}
               height={500}
               className="object-cover rounded-md shadow-lg transition-transform duration-300 hover:scale-105"
+              priority
             />
           </div>
         </div>
@@ -248,7 +269,7 @@ export default function LandingPage() {
 
           {/* Country & Currency */}
           <p className="text-sm text-gray-300">
-            Bandung | West Java
+            Inventu © {new Date().getFullYear()} - All rights reserved.
           </p>
         </div>
       </footer>
