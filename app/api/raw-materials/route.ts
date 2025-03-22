@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import RawMaterial from "@/models/RawMaterial";
 
-// Koneksi ke database
 connectDB();
 
-// GET: Ambil semua bahan baku & POST: Tambah bahan baku baru
 export async function GET() {
   try {
     const rawMaterials = await RawMaterial.find();

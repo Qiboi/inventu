@@ -4,7 +4,6 @@ import RawMaterial from "@/models/RawMaterial";
 
 connectDB();
 
-// GET: Ambil satu bahan baku berdasarkan ID
 export async function GET(
   req: NextRequest, 
   { params }: { params: Promise<{ id: string }> 
@@ -29,7 +28,6 @@ export async function GET(
   }
 }
 
-// PUT: Update bahan baku berdasarkan ID
 export async function PUT(
   req: NextRequest, 
   { params }: { params: Promise<{ id: string }> 
@@ -65,7 +63,6 @@ export async function PUT(
   }
 }
 
-// DELETE: Hapus bahan baku berdasarkan ID
 export async function DELETE(
   req: NextRequest, 
   { params }: { params: Promise<{ id: string }> 
