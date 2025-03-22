@@ -4,7 +4,6 @@ import StockIn from "@/models/StockIn";
 
 connectDB();
 
-// GET: Ambil satu data Stock In berdasarkan ID
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> 
@@ -29,7 +28,6 @@ export async function GET(
   }
 }
 
-// PUT: Update data Stock In berdasarkan ID
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> 
@@ -84,7 +82,6 @@ export async function PUT(
   }
 }
 
-// DELETE: Hapus data Stock In berdasarkan ID
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> 

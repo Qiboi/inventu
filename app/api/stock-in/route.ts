@@ -5,7 +5,6 @@ import RawMaterial from "@/models/RawMaterial";
 
 connectDB();
 
-// GET: Ambil semua data Stock In
 export async function GET() {
   try {
     const stockInList = await StockIn.find().populate("rawMaterial");
@@ -18,7 +17,6 @@ export async function GET() {
   }
 }
 
-// POST: Tambah data Stock In
 export async function POST(req: NextRequest) {
   try {
     const {
