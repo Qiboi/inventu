@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
@@ -10,60 +10,52 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { AlertDialogDelete } from "@/components/alert-dialog-delete";
 
-interface RawMaterial {
+interface Category {
     _id?: string;
     name: string;
-    category: string;
-    unit: string;
-    stock: number;
-    label: string;
 }
 
-export default function RawMaterialsPage() {
-    const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
+export default function CategoryPage() {
+    const [categories, setCategories] = useState<Category[]>([]);
     const [search, setSearch] = useState("");
-    const [form, setForm] = useState<RawMaterial>({
-        name: "",
-        category: "",
-        unit: "",
-        stock: 0,
-        label: "",
-    });
+    const [form, setForm] = useState<Category>({
+        name: ""
+    })
     const [isEditing, setIsEditing] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [deletedId, setDeletedId] = useState("");
 
-    const fetchRawMaterials = useCallback(async () => {
+    const fetchCategories = useCallback(async () => {
         try {
-            const response = await fetch("/api/raw-materials");
+            const response = await fetch("/api/categories");
             const { data } = await response.json();
             if (Array.isArray(data)) {
-                setRawMaterials(data);
+                setCategories(data);
             } else {
-                setRawMaterials([]);
+                setCategories([]);
             }
         } catch (error) {
-            console.error("Error fetching raw materials:", error);
+            console.error("Error fetching categories:", error);
         }
     }, []);
 
     useEffect(() => {
-        fetchRawMaterials();
-    }, [fetchRawMaterials]);
+        fetchCategories();
+    }, [fetchCategories]);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
         setForm((prev) => ({
             ...prev,
-            [name]: name === "stock" ? Number(value) : value, // Ensure stock is a number
+            [name]: value,
         }));
     }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         const method = isEditing ? "PUT" : "POST";
-        const url = isEditing && form._id ? `/api/raw-materials/${form._id}` : "/api/raw-materials";
+        const url = isEditing && form._id ? `/api/categories/${form._id}` : "/api/categories";
         console.log("URL : ", url);
 
         try {
@@ -75,10 +67,10 @@ export default function RawMaterialsPage() {
 
             if (!response.ok) throw new Error("Failed to save data.");
 
-            toast.success(isEditing ? "Data updated!" : "Raw material added!");
-            fetchRawMaterials();
+            toast.success(isEditing ? "Data updated!" : "Category added!");
+            fetchCategories();
+            setForm({ name: "" });
             setIsDialogOpen(false);
-            setForm({ name: "", category: "", unit: "", stock: 0, label: "" });
             setIsEditing(false);
         } catch (error) {
             console.log("Error : ", error);
@@ -88,50 +80,41 @@ export default function RawMaterialsPage() {
 
     async function handleDelete(id: string) {
         try {
-            await fetch(`/api/raw-materials/${id}`, { method: "DELETE" });
-            toast("Raw material deleted!");
+            await fetch(`/api/categories/${id}`, { method: "DELETE" });
+            toast.success("Category deleted!");
         } catch (error) {
             console.log("Error : ", error);
             toast.error("Failed to delete!");
         }
-        fetchRawMaterials();
+        fetchCategories();
         setDeletedId("");
         setIsDeleteDialogOpen(false);
     }
 
-    return (
+    return(
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Raw Materials</h1>
+                <h1 className="text-2xl font-bold">Category</h1>
                 <Button variant="default" onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-5 w-5" /> Add Raw Material
+                    <Plus className="mr-2 h-5 w-5" /> Add Category
                 </Button>
             </div>
-            <Input placeholder="Search raw materials..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input placeholder="Search category..." value={search} onChange={(e) => setSearch(e.target.value)} />
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Unit</TableHead>
-                        <TableHead>Stock</TableHead>
-                        <TableHead>Label</TableHead>
                         <TableHead>Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {rawMaterials
+                    {categories
                         .filter((item) =>
-                            item.name.toLowerCase().includes(search.toLowerCase()) ||
-                            item.label.toLowerCase().includes(search.toLowerCase())
+                            item.name.toLowerCase().includes(search.toLowerCase())
                         )
                         .map((item) => (
                             <TableRow key={item._id}>
                                 <TableCell>{item.name}</TableCell>
-                                <TableCell>{item.category}</TableCell>
-                                <TableCell>{item.unit}</TableCell>
-                                <TableCell>{item.stock}</TableCell>
-                                <TableCell>{item.label}</TableCell>
                                 <TableCell className="flex space-x-2">
                                     <Button
                                         size="icon"
@@ -155,21 +138,18 @@ export default function RawMaterialsPage() {
                                     </Button>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ))
+                    }
                 </TableBody>
             </Table>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{isEditing ? "Edit Raw Material" : "Add Raw Material"}</DialogTitle>
+                        <DialogTitle>{isEditing ? "Edit Category" : "Add Category"}</DialogTitle>
                     </DialogHeader>
                     <form className="space-y-4" onSubmit={handleSubmit}>
-                        <Label>Raw Material Name</Label><Input name="name" value={form.name} onChange={handleChange} required />
-                        <Label>Category</Label><Input name="category" value={form.category} onChange={handleChange} required />
-                        <Label>Unit</Label><Input name="unit" value={form.unit} onChange={handleChange} required />
-                        <Label>Stock</Label><Input name="stock" type="number" value={form.stock} onChange={handleChange} required />
-                        <Label>Label</Label><Input name="label" value={form.label} onChange={handleChange} required />
+                        <Label>Category Name</Label><Input name="name" value={form.name} onChange={handleChange} required />
                         <Button type="submit" className="w-full">{isEditing ? "Update" : "Save"}</Button>
                     </form>
                 </DialogContent>
