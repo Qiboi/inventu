@@ -3,12 +3,16 @@
 import * as React from "react";
 import Image from "next/image";
 import {
-  Package,
-  ClipboardList,
+  // Package,
+  // ClipboardList,
   // Boxes,
   // Fuel,
   ArrowDownCircle,
   // ArrowUpCircle,
+  House,
+  Shapes,
+  Leaf,
+  Ruler
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { NavMain } from "@/components/nav-main";
@@ -29,13 +33,20 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: Package,
+      icon: House,
       isActive: true,
     },
+    // {
+    //   title: "Stock Log",
+    //   url: "/dashboard/stock-log",
+    //   icon: ClipboardList,
+    // },
+  ],
+  navProduct: [
     {
       title: "Raw Material",
-      url: "/dashboard/raw-materials",
-      icon: ClipboardList,
+      url: "/dashboard/raw-material",
+      icon: Leaf,
     },
     // {
     //   title: "ATK",
@@ -65,6 +76,18 @@ const data = {
     //   icon: ArrowUpCircle,
     // },
   ],
+  navMaster: [
+    {
+      title: "Category",
+      url: "/dashboard/category",
+      icon: Shapes,
+    },
+    {
+      title: "Unit",
+      url: "/dashboard/unit",
+      icon: Ruler,
+    }
+  ]
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -103,8 +126,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain items={data.navMain} />
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Manajemen Stok</SidebarGroupLabel>
+          <SidebarGroupLabel>Products</SidebarGroupLabel>
+          <NavMain items={data.navProduct} />
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Stock Management</SidebarGroupLabel>
           <NavMain items={data.navStock} />
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Master Data</SidebarGroupLabel>
+          <NavMain items={data.navMaster} />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>

@@ -112,8 +112,8 @@ export default function StockInPage() {
 
             toast.success(isEditing ? "Data diperbarui!" : "Stock In ditambahkan!");
             fetchStockIn();
-            setIsDialogOpen(false);
             setForm({ rawMaterial: "", quantity: 0, supplier: "", address: "", destinationLocation: "", doSupplierNo: "", forceDate: "", draftIn: "", forceNumber: "" });
+            setIsDialogOpen(false);
             setIsEditing(false);
         } catch (error) {
             console.log("Error : ", error);
@@ -124,7 +124,7 @@ export default function StockInPage() {
     async function handleDelete(id: string) {
         try {
             await fetch(`/api/stock-in/${id}`, { method: "DELETE" });
-            toast("Stock In dihapus!");
+            toast.success("Stock In dihapus!");
         } catch (error) {
             console.log("Error : ", error);
             toast.error("Gagal menghapus!");
@@ -133,9 +133,6 @@ export default function StockInPage() {
         setDeletedId("");
         setIsDeleteDialogOpen(false);
     }
-
-    console.log("STOCK IN : ", stockInList);
-    console.log("RAW : ", rawMaterials)
 
     return (
         <div className="p-6 space-y-6">
@@ -197,7 +194,7 @@ export default function StockInPage() {
             </Table>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[calc(100vh-4rem)] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>{isEditing ? "Edit Stock In" : "Add Stock In"}</DialogTitle>
                     </DialogHeader>
@@ -205,7 +202,7 @@ export default function StockInPage() {
                         <Label>Product Name</Label>
                         <Select onValueChange={handleSelectChange} value={typeof form.rawMaterial === "object" ? form.rawMaterial._id : form.rawMaterial || ""}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Pilih bahan baku" />
+                                <SelectValue placeholder="Choose product" />
                             </SelectTrigger>
                             <SelectContent>
                                 {rawMaterials.map((item) => (
