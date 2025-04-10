@@ -7,12 +7,13 @@ import {
   // ClipboardList,
   // Boxes,
   // Fuel,
-  ArrowDownCircle,
+  // ArrowDownCircle,
   // ArrowUpCircle,
+  Layers,
   House,
   Shapes,
-  Leaf,
-  Ruler
+  Ruler,
+  ShoppingBag,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { NavMain } from "@/components/nav-main";
@@ -42,11 +43,11 @@ const data = {
     //   icon: ClipboardList,
     // },
   ],
-  navProduct: [
+  navInventory: [
     {
-      title: "Raw Material",
-      url: "/dashboard/raw-material",
-      icon: Leaf,
+      title: "Product",
+      url: "/dashboard/product",
+      icon: ShoppingBag,
     },
     // {
     //   title: "ATK",
@@ -64,18 +65,18 @@ const data = {
     //   icon: Fuel,
     // },
   ],
-  navStock: [
-    {
-      title: "Stock In",
-      url: "/dashboard/stock-in",
-      icon: ArrowDownCircle,
-    },
-    // {
-    //   title: "Stok Out",
-    //   url: "/dashboard/stock-out",
-    //   icon: ArrowUpCircle,
-    // },
-  ],
+  // navStock: [
+  //   {
+  //     title: "Stock In",
+  //     url: "/dashboard/stock-in",
+  //     icon: ArrowDownCircle,
+  //   },
+  //   // {
+  //   //   title: "Stok Out",
+  //   //   url: "/dashboard/stock-out",
+  //   //   icon: ArrowUpCircle,
+  //   // },
+  // ],
   navMaster: [
     {
       title: "Category",
@@ -86,7 +87,12 @@ const data = {
       title: "Unit",
       url: "/dashboard/unit",
       icon: Ruler,
-    }
+    },
+    {
+      title: "Part",
+      url: "/dashboard/part",
+      icon: Layers,
+    },
   ]
 };
 
@@ -126,13 +132,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain items={data.navMain} />
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Products</SidebarGroupLabel>
-          <NavMain items={data.navProduct} />
+          <SidebarGroupLabel>Inventory</SidebarGroupLabel>
+          <NavMain items={data.navInventory} />
         </SidebarGroup>
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel>Stock Management</SidebarGroupLabel>
           <NavMain items={data.navStock} />
-        </SidebarGroup>
+        </SidebarGroup> */}
         <SidebarGroup>
           <SidebarGroupLabel>Master Data</SidebarGroupLabel>
           <NavMain items={data.navMaster} />

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import RawMaterial from "@/models/RawMaterial";
+import Product from "@/models/Product";
 
 connectDB();
 
@@ -10,19 +10,19 @@ export async function GET(
 }) {
   try {
     const { id } = await params;
-    const rawMaterial = await RawMaterial.findById(id);
+    const product = await Product.findById(id);
 
-    if (!rawMaterial) {
+    if (!product) {
       return NextResponse.json(
-        { success: false, message: "Raw material not found" },
+        { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ success: true, data: rawMaterial });
+    return NextResponse.json({ success: true, data: product });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Failed to fetch raw material", error },
+      { success: false, message: "Failed to fetch product", error },
       { status: 500 }
     );
   }
@@ -34,30 +34,30 @@ export async function PUT(
 }) {
   try {
     const { id } = await params;
-    const { name, category, unit, stock, label } =
+    const { name, part, category, unit, stock, minimum_stock, label, supplier, address } =
       await req.json();
 
-    const updatedMaterial = await RawMaterial.findByIdAndUpdate(
+    const updated = await Product.findByIdAndUpdate(
       id,
-      { name, category, unit, stock, label },
+      { name, part, category, unit, stock, minimum_stock, label, supplier, address },
       { new: true, runValidators: true }
     );
 
-    if (!updatedMaterial) {
+    if (!updated) {
       return NextResponse.json(
-        { success: false, message: "Raw material not found" },
+        { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      data: updatedMaterial,
-      message: "Raw material updated successfully",
+      data: updated,
+      message: "Product updated successfully",
     });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Failed to update raw material", error },
+      { success: false, message: "Failed to update product", error },
       { status: 500 }
     );
   }
@@ -69,22 +69,22 @@ export async function DELETE(
 }) {
   try {
     const { id } = await params;
-    const deletedMaterial = await RawMaterial.findByIdAndDelete(id);
+    const deleted = await Product.findByIdAndDelete(id);
 
-    if (!deletedMaterial) {
+    if (!deleted) {
       return NextResponse.json(
-        { success: false, message: "Raw material not found" },
+        { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: "Raw material deleted successfully",
+      message: "Product deleted successfully",
     });
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Failed to delete raw material", error },
+      { success: false, message: "Failed to delete product", error },
       { status: 500 }
     );
   }

@@ -66,7 +66,7 @@ export default function StockInPage() {
 
     const fetchRawMaterials = useCallback(async () => {
         try {
-            const response = await fetch("/api/raw-materials");
+            const response = await fetch("/api/inventories");
             const { data } = await response.json();
             setRawMaterials(data || []);
         } catch (error) {

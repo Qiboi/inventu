@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import StockIn from "@/models/StockIn";
-import RawMaterial from "@/models/RawMaterial";
 
 connectDB();
 
@@ -45,9 +44,9 @@ export async function POST(req: NextRequest) {
 
     await newStockIn.save();
 
-    await RawMaterial.findByIdAndUpdate(rawMaterial, {
-      $inc: { stock: quantity },
-    });
+    // await RawMaterial.findByIdAndUpdate(rawMaterial, {
+    //   $inc: { stock: quantity },
+    // });
 
     return NextResponse.json({
       success: true,

@@ -6,16 +6,16 @@ import { Package, Shapes, Ruler } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
-  const [totalRawMaterials, setTotalRawMaterials] = useState(0);
+  // const [totalRawMaterials, setTotalRawMaterials] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
   const [totalUnits, setTotalUnits] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const rawMaterialsRes = await fetch("/api/raw-materials");
-        const { data: rawMaterials } = await rawMaterialsRes.json();
-        if (Array.isArray(rawMaterials)) setTotalRawMaterials(rawMaterials.length);
+        // const rawMaterialsRes = await fetch("/api/inventories");
+        // const { data: rawMaterials } = await rawMaterialsRes.json();
+        // if (Array.isArray(rawMaterials)) setTotalRawMaterials(rawMaterials.length);
 
         const categoriesRes = await fetch("/api/categories");
         const { data: categories } = await categoriesRes.json();
@@ -48,7 +48,7 @@ export default function DashboardPage() {
               <Package className="h-8 w-8 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{totalRawMaterials}</p>
+              {/* <p className="text-3xl font-bold">{totalRawMaterials}</p> */}
               <p className="text-sm text-muted-foreground">Total Items</p>
             </CardContent>
           </Card>
