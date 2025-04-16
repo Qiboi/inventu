@@ -2,20 +2,27 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, Shapes, Ruler } from "lucide-react";
+import { 
+  // Package, 
+  Shapes, 
+  Ruler, 
+  ShoppingBag, 
+  Layers,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
-  // const [totalRawMaterials, setTotalRawMaterials] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
   const [totalUnits, setTotalUnits] = useState(0);
+  const [totalParts, setTotalParts] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        // const rawMaterialsRes = await fetch("/api/inventories");
-        // const { data: rawMaterials } = await rawMaterialsRes.json();
-        // if (Array.isArray(rawMaterials)) setTotalRawMaterials(rawMaterials.length);
+        const productsRes = await fetch("/api/products");
+        const { data: products } = await productsRes.json();
+        if (Array.isArray(products)) setTotalProducts(products.length);
 
         const categoriesRes = await fetch("/api/categories");
         const { data: categories } = await categoriesRes.json();
@@ -24,6 +31,10 @@ export default function DashboardPage() {
         const unitsRes = await fetch("/api/units");
         const { data: units } = await unitsRes.json();
         if (Array.isArray(units)) setTotalUnits(units.length);
+
+        const partRes = await fetch("/api/parts");
+        const { data: parts } = await partRes.json();
+        if (Array.isArray(parts)) setTotalParts(parts.length);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -44,12 +55,12 @@ export default function DashboardPage() {
         <div className="grid gap-6 md:grid-cols-4 mt-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Raw Materials</CardTitle>
-              <Package className="h-8 w-8 text-muted-foreground" />
+              <CardTitle>Products</CardTitle>
+              <ShoppingBag className="h-8 w-8 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {/* <p className="text-3xl font-bold">{totalRawMaterials}</p> */}
-              <p className="text-sm text-muted-foreground">Total Items</p>
+              <p className="text-3xl font-bold">{totalProducts}</p>
+              <p className="text-sm text-muted-foreground">Total Products</p>
             </CardContent>
           </Card>
 
@@ -79,6 +90,17 @@ export default function DashboardPage() {
             <CardContent>
               <p className="text-3xl font-bold">{totalUnits}</p>
               <p className="text-sm text-muted-foreground">Total Units</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Parts</CardTitle>
+              <Layers className="h-8 w-8 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{totalParts}</p>
+              <p className="text-sm text-muted-foreground">Total Parts</p>
             </CardContent>
           </Card>
 
