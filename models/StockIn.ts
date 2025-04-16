@@ -1,12 +1,10 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IStockIn extends Document {
-    rawMaterial: mongoose.Schema.Types.ObjectId; // Referensi ke bahan baku
+    product_id: mongoose.Schema.Types.ObjectId; // Referensi ke bahan baku
     quantity: number;
     draftIn: string;
     forceNumber: string;
-    supplier: string;
-    address: string;
     destinationLocation: string;
     doSupplierNo: string;
     forceDate: Date;
@@ -16,16 +14,14 @@ export interface IStockIn extends Document {
 
 const StockInSchema = new Schema<IStockIn>(
     {
-        rawMaterial: {
+        product_id: {
             type: Schema.Types.ObjectId,
-            ref: "RawMaterial",
+            ref: "Product",
             required: true,
         },
         quantity: { type: Number, required: true },
         draftIn: { type: String, required: true },
         forceNumber: { type: String, required: true },
-        supplier: { type: String, required: true },
-        address: { type: String, required: true },
         destinationLocation: { type: String, required: true },
         doSupplierNo: { type: String, required: true },
         forceDate: { type: Date, required: true },

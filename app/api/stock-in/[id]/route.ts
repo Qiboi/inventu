@@ -35,12 +35,10 @@ export async function PUT(
   try {
     const { id } = await params;
     const {
-      rawMaterial,
+      product_id,
       quantity,
       draftIn,
       forceNumber,
-      supplier,
-      address,
       destinationLocation,
       doSupplierNo,
       forceDate,
@@ -49,12 +47,10 @@ export async function PUT(
     const updatedStockIn = await StockIn.findByIdAndUpdate(
       id,
       {
-        rawMaterial,
+        product_id,
         quantity,
         draftIn,
         forceNumber,
-        supplier,
-        address,
         destinationLocation,
         doSupplierNo,
         forceDate,

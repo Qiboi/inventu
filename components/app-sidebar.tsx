@@ -7,8 +7,8 @@ import {
   // ClipboardList,
   // Boxes,
   // Fuel,
-  // ArrowDownCircle,
-  // ArrowUpCircle,
+  ArrowDownCircle,
+  ArrowUpCircle,
   Layers,
   House,
   Shapes,
@@ -65,18 +65,18 @@ const data = {
     //   icon: Fuel,
     // },
   ],
-  // navStock: [
-  //   {
-  //     title: "Stock In",
-  //     url: "/dashboard/stock-in",
-  //     icon: ArrowDownCircle,
-  //   },
-  //   // {
-  //   //   title: "Stok Out",
-  //   //   url: "/dashboard/stock-out",
-  //   //   icon: ArrowUpCircle,
-  //   // },
-  // ],
+  navStock: [
+    {
+      title: "Stock In",
+      url: "/dashboard/stock-in",
+      icon: ArrowDownCircle,
+    },
+    {
+      title: "Stok Out",
+      url: "/dashboard/stock-out",
+      icon: ArrowUpCircle,
+    },
+  ],
   navMaster: [
     {
       title: "Category",
@@ -135,10 +135,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Inventory</SidebarGroupLabel>
           <NavMain items={data.navInventory} />
         </SidebarGroup>
-        {/* <SidebarGroup>
+        <SidebarGroup>
           <SidebarGroupLabel>Stock Management</SidebarGroupLabel>
           <NavMain items={data.navStock} />
-        </SidebarGroup> */}
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Master Data</SidebarGroupLabel>
           <NavMain items={data.navMaster} />

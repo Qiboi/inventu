@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import StockIn from "@/models/StockIn";
+import Product from "@/models/Product";
 
 connectDB();
 
 export async function GET() {
   try {
-    const stockInList = await StockIn.find().populate("rawMaterial");
+    const stockInList = await StockIn.find().populate("product_id");
     return NextResponse.json({ success: true, data: stockInList });
   } catch (error) {
     return NextResponse.json(
@@ -19,24 +20,20 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const {
-      rawMaterial,
+      product_id,
       quantity,
       draftIn,
       forceNumber,
-      supplier,
-      address,
       destinationLocation,
       doSupplierNo,
       forceDate,
     } = await req.json();
 
     const newStockIn = new StockIn({
-      rawMaterial,
+      product_id,
       quantity,
       draftIn,
       forceNumber,
-      supplier,
-      address,
       destinationLocation,
       doSupplierNo,
       forceDate,
@@ -44,9 +41,9 @@ export async function POST(req: NextRequest) {
 
     await newStockIn.save();
 
-    // await RawMaterial.findByIdAndUpdate(rawMaterial, {
-    //   $inc: { stock: quantity },
-    // });
+    await Product.findByIdAndUpdate(product_id, {
+      $inc: { stock: quantity },
+    });
 
     return NextResponse.json({
       success: true,

@@ -14,10 +14,8 @@ import { DatePicker } from "@/components/date-picker";
 
 interface StockIn {
     _id?: string;
-    rawMaterial: { _id: string; name: string } | string; // Bisa objek atau string
+    product_id: { _id: string; name: string; label: string; unit: string; supplier: string; address: string; } | string; // Bisa objek atau string
     quantity: number;
-    supplier: string;
-    address: string;
     destinationLocation: string;
     doSupplierNo: string;
     forceDate: string;
@@ -25,26 +23,29 @@ interface StockIn {
     forceNumber: string;
 }
 
-interface RawMaterial {
+interface Product {
     _id: string;
     name: string;
+    label: string;
+    unit: string;
+    supplier: string;
+    address: string;
 }
 
 export default function StockInPage() {
     const [stockInList, setStockInList] = useState<StockIn[]>([]);
-    const [rawMaterials, setRawMaterials] = useState<RawMaterial[]>([]);
     const [search, setSearch] = useState("");
     const [form, setForm] = useState<StockIn>({
-        rawMaterial: "",
+        product_id: "",
         quantity: 0,
-        supplier: "",
-        address: "",
         destinationLocation: "",
         doSupplierNo: "",
         forceDate: "",
         draftIn: "",
         forceNumber: "",
     });
+    const [products, setProducts] = useState<Product[]>([]);
+    const [productSelect, setProductSelect] = useState<Product>({ _id: "", name: "", label: "", unit: "", supplier: "", address: "" });
     const [isEditing, setIsEditing] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -54,6 +55,7 @@ export default function StockInPage() {
         try {
             const response = await fetch("/api/stock-in");
             const { data } = await response.json();
+            console.log(data);
             if (Array.isArray(data)) {
                 setStockInList(data);
             } else {
@@ -64,11 +66,11 @@ export default function StockInPage() {
         }
     }, []);
 
-    const fetchRawMaterials = useCallback(async () => {
+    const fetchProducts = useCallback(async () => {
         try {
-            const response = await fetch("/api/inventories");
+            const response = await fetch("/api/products");
             const { data } = await response.json();
-            setRawMaterials(data || []);
+            setProducts(data || []);
         } catch (error) {
             console.error("Error fetching raw materials:", error);
         }
@@ -76,8 +78,8 @@ export default function StockInPage() {
 
     useEffect(() => {
         fetchStockIn();
-        fetchRawMaterials();
-    }, [fetchStockIn, fetchRawMaterials]);
+        fetchProducts();
+    }, [fetchStockIn, fetchProducts]);
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
@@ -88,7 +90,11 @@ export default function StockInPage() {
     }
 
     function handleSelectChange(value: string) {
-        setForm((prev) => ({ ...prev, rawMaterial: value }));
+        setForm((prev) => ({ ...prev, product_id: value }));
+        const item = products.find((item) => item._id === value);
+        if (item) {
+            setProductSelect(item);
+          }
     }
 
     async function handleSubmit(e: React.FormEvent) {
@@ -112,7 +118,7 @@ export default function StockInPage() {
 
             toast.success(isEditing ? "Data diperbarui!" : "Stock In ditambahkan!");
             fetchStockIn();
-            setForm({ rawMaterial: "", quantity: 0, supplier: "", address: "", destinationLocation: "", doSupplierNo: "", forceDate: "", draftIn: "", forceNumber: "" });
+            setForm({ product_id: "", quantity: 0, destinationLocation: "", doSupplierNo: "", forceDate: "", draftIn: "", forceNumber: "" });
             setIsDialogOpen(false);
             setIsEditing(false);
         } catch (error) {
@@ -147,10 +153,12 @@ export default function StockInPage() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Product Name</TableHead>
+                        <TableHead>Item Code</TableHead>
                         <TableHead>Quantity</TableHead>
+                        <TableHead>Unit</TableHead>
                         <TableHead>Supplier</TableHead>
-                        <TableHead>Supplier Address</TableHead>
-                        <TableHead>Draft In</TableHead>
+                        <TableHead>Address</TableHead>
+                        <TableHead>Force Number</TableHead>
                         <TableHead>DO Supplier No</TableHead>
                         <TableHead>Destination Location</TableHead>
                         <TableHead>Force Date</TableHead>
@@ -160,17 +168,19 @@ export default function StockInPage() {
                 <TableBody>
                     {stockInList
                         .filter((item) =>
-                            typeof item.rawMaterial === "object" && item.rawMaterial?.name.toLowerCase().includes(search.toLowerCase())
+                            typeof item.product_id === "object" && item.product_id?.name.toLowerCase().includes(search.toLowerCase())
                         )
                         .map((item) => (
                             <TableRow key={item._id}>
-                                <TableCell>{typeof item.rawMaterial === "object" ? item.rawMaterial?.name : "-"}</TableCell>
+                                <TableCell>{typeof item.product_id === "object" ? item.product_id?.name : "-"}</TableCell>
+                                <TableCell>{typeof item.product_id === "object" ? item.product_id?.label : "-"}</TableCell>
                                 <TableCell>{item.quantity}</TableCell>
-                                <TableCell>{item.supplier}</TableCell>
-                                <TableCell>{item.address}</TableCell>
+                                <TableCell>{typeof item.product_id === "object" ? item.product_id?.unit : "-"}</TableCell>
+                                <TableCell>{typeof item.product_id === "object" ? item.product_id?.supplier : "-"}</TableCell>
+                                <TableCell>{typeof item.product_id === "object" ? item.product_id?.address : "-"}</TableCell>
+                                <TableCell>{item.destinationLocation}</TableCell>
                                 <TableCell>{item.draftIn}</TableCell>
                                 <TableCell>{item.doSupplierNo}</TableCell>
-                                <TableCell>{item.destinationLocation}</TableCell>
                                 <TableCell>{item.forceDate ? new Date(item.forceDate).toLocaleDateString() : "-"}</TableCell>
                                 <TableCell className="flex space-x-2">
                                     <Button size="icon" variant="outline" onClick={() => {
@@ -200,22 +210,24 @@ export default function StockInPage() {
                     </DialogHeader>
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <Label>Product Name</Label>
-                        <Select onValueChange={handleSelectChange} value={typeof form.rawMaterial === "object" ? form.rawMaterial._id : form.rawMaterial || ""}>
+                        <Select onValueChange={handleSelectChange} value={typeof form.product_id === "object" ? form.product_id._id : form.product_id || ""}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Choose product" />
                             </SelectTrigger>
                             <SelectContent>
-                                {rawMaterials.map((item) => (
+                                {products.map((item) => (
                                     <SelectItem key={item._id} value={item._id}>
                                         {item.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
+                        <Label>Item Code</Label><Input name="label" type="text" value={productSelect.label || ""} readOnly disabled />
                         <Label>Quantity</Label><Input name="quantity" type="number" value={form.quantity} onChange={handleChange} required />
-                        <Label>Supplier</Label><Input name="supplier" value={form.supplier} onChange={handleChange} required />
-                        <Label>Address</Label><Input name="address" value={form.address} onChange={handleChange} required />
-                        <Label>Draft In</Label><Input name="draftIn" value={form.draftIn} onChange={handleChange} required />
+                        <Label>Unit</Label><Input name="unit" type="text" value={productSelect.unit || ""} readOnly disabled />
+                        <Label>Supplier</Label><Input name="supplier" type="text" value={productSelect.supplier || ""} readOnly disabled />
+                        <Label>Address</Label><Input name="address" type="text" value={productSelect.address || ""} readOnly disabled />
+                        <Label>Force Number</Label><Input name="draftIn" value={form.draftIn} onChange={handleChange} required />
                         <Label>DO Supplier No</Label><Input name="doSupplierNo" value={form.doSupplierNo} onChange={handleChange} required />
                         <Label>Destination Location</Label><Input name="destinationLocation" value={form.destinationLocation} onChange={handleChange} required />
                         <Label>Force Date</Label>
