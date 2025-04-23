@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Import } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { AlertDialogDelete } from "@/components/alert-dialog-delete";
+import Papa from "papaparse";
 
 interface Product {
     _id?: string;
@@ -56,9 +57,13 @@ export default function ProductPage() {
         supplier: "",
         address: "",
     })
+    const [csvFile, setCsvFile] = useState<File | null>(null);
+    const [csvData, setCsvData] = useState<Product[]>([]);
+
     const [isEditing, setIsEditing] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
     const [deletedId, setDeletedId] = useState("");
 
     const fetchProducts = useCallback(async () => {
@@ -127,6 +132,26 @@ export default function ProductPage() {
         }));
     }
 
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (file) {
+            setCsvFile(file);
+    
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (result) => {
+                    const parsed = result.data as Product[];
+                    setCsvData(parsed);
+                },
+                error: (err) => {
+                    toast.error("Failed to parse CSV file.");
+                    console.error(err);
+                }
+            });
+        }
+    }
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         const method = isEditing ? "PUT" : "POST";
@@ -166,15 +191,45 @@ export default function ProductPage() {
         setIsDeleteDialogOpen(false);
     }
 
-    console.log(products);
+    async function handleImportSubmit() {
+        console.log(csvFile);
+        try {
+            const response = await fetch("/api/products/import", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: csvData }),
+            });
+    
+            if (!response.ok) throw new Error("Failed to import products.");
+            
+            toast.success("Products imported successfully!");
+            setIsImportDialogOpen(false);
+            setCsvFile(null);
+            setCsvData([]);
+            fetchProducts();
+        } catch (error) {
+            toast.error("Import failed.");
+            console.error(error);
+        }
+    }
 
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Product</h1>
-                <Button variant="default" onClick={() => setIsDialogOpen(true)}>
-                    <Plus className="mr-2 h-5 w-5" /> Add Product
-                </Button>
+                <div className="flex space-x-4">
+                    <Button variant="outline" asChild>
+                        <a href="/import/product.csv" download>
+                            Download Format
+                        </a>
+                    </Button>
+                    <Button variant="default" onClick={() => setIsImportDialogOpen(true)}>
+                        <Import className="mr-2 h-5 w-5" /> Import Product
+                    </Button>
+                    <Button variant="default" onClick={() => setIsDialogOpen(true)}>
+                        <Plus className="mr-2 h-5 w-5" /> Add Product
+                    </Button>
+                </div>
             </div>
             <Input placeholder="Search product..." value={search} onChange={(e) => setSearch(e.target.value)} />
             <Table>
@@ -308,11 +363,29 @@ export default function ProductPage() {
                 </DialogContent>
             </Dialog>
 
+            <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Import Product</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <Input type="file" accept=".csv" onChange={handleFileChange} />
+                        {csvData.length > 0 && (
+                            <div className="text-sm text-gray-500">{csvData.length} items ready to import</div>
+                        )}
+                        <Button onClick={handleImportSubmit} disabled={csvData.length === 0}>
+                            Submit Import
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <AlertDialogDelete
                 isOpen={isDeleteDialogOpen}
                 setIsOpen={setIsDeleteDialogOpen}
                 onConfirm={() => handleDelete(deletedId)}
             />
+
         </div>
     );
 }
