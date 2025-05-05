@@ -1,106 +1,135 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import StockIn from "@/models/StockIn";
+// import Product from "@/models/Product";
 
-connectDB();
+await connectDB();
+
+// Helper untuk adjust stock
+// async function adjustStock(productId: string, delta: number) {
+//   await Product.findByIdAndUpdate(
+//     productId,
+//     { $inc: { stock: delta } },
+//     { new: true }
+//   );
+// }
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> 
-}) {
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params;
-    const stockIn = await StockIn.findById(id).populate("rawMaterial");
+    const stockIn = await StockIn.findById(id).populate("items.product_id");
 
     if (!stockIn) {
       return NextResponse.json(
-        { success: false, message: "Stock In data not found" },
+        { success: false, message: "Stock In not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({ success: true, data: stockIn });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch stock-in data", error },
+      { success: false, message: "Failed to fetch Stock In", error },
       { status: 500 }
     );
   }
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> 
-}) {
-  try {
-    const { id } = await params;
-    const {
-      product_id,
-      quantity,
-      draftIn,
-      forceNumber,
-      destinationLocation,
-      doSupplierNo,
-      forceDate,
-    } = await req.json();
+// export async function PUT(
+//   req: NextRequest,
+//   { params }: { params: Promise<{ id: string }> }
+// ) {
+//   try {
+//     const { id } = await params;
+//     const {
+//       items: newItems,
+//       draftIn,
+//       forceNumber,
+//       destinationLocation,
+//       doSupplierNo,
+//       forceDate,
+//     } = await req.json();
 
-    const updatedStockIn = await StockIn.findByIdAndUpdate(
-      id,
-      {
-        product_id,
-        quantity,
-        draftIn,
-        forceNumber,
-        destinationLocation,
-        doSupplierNo,
-        forceDate,
-      },
-      { new: true, runValidators: true }
-    );
+//     // Ambil dokumen lama
+//     const old = await StockIn.findById(id);
+//     if (!old) {
+//       return NextResponse.json(
+//         { success: false, message: "Stock In not found" },
+//         { status: 404 }
+//       );
+//     }
 
-    if (!updatedStockIn) {
-      return NextResponse.json(
-        { success: false, message: "Stock In data not found" },
-        { status: 404 }
-      );
-    }
+//     // Revert stok lama
+//     await Promise.all(
+//       old.items.map(({ product_id, quantity }) =>
+//         adjustStock(product_id.toString(), -quantity)
+//       )
+//     );
 
-    return NextResponse.json({
-      success: true,
-      data: updatedStockIn,
-      message: "Stock In updated successfully",
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: "Failed to update stock-in data", error },
-      { status: 500 }
-    );
-  }
-}
+//     // Update StockIn
+//     const updated = await StockIn.findByIdAndUpdate(
+//       id,
+//       { items: newItems, draftIn, forceNumber, destinationLocation, doSupplierNo, forceDate },
+//       { new: true, runValidators: true }
+//     ).populate("items.product_id");
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> 
-}) {
-  try {
-    const { id } = await params;
-    const deletedStockIn = await StockIn.findByIdAndDelete(id);
+//     // Apply stok baru
+//     await Promise.all(
+//       newItems.map(({ product_id, quantity }) =>
+//         adjustStock(product_id, quantity)
+//       )
+//     );
 
-    if (!deletedStockIn) {
-      return NextResponse.json(
-        { success: false, message: "Stock In data not found" },
-        { status: 404 }
-      );
-    }
+//     return NextResponse.json({
+//       success: true,
+//       data: updated,
+//       message: "Stock In updated and stocks adjusted",
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json(
+//       { success: false, message: "Failed to update", error },
+//       { status: 500 }
+//     );
+//   }
+// }
 
-    return NextResponse.json({
-      success: true,
-      message: "Stock In deleted successfully",
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: "Failed to delete stock-in data", error },
-      { status: 500 }
-    );
-  }
-}
+// export async function DELETE(
+//   req: NextRequest,
+//   { params }: { params: Promise<{ id: string }> }
+// ) {
+//   try {
+//     const { id } = await params;
+//     const toDelete = await StockIn.findById(id);
+//     if (!toDelete) {
+//       return NextResponse.json(
+//         { success: false, message: "Stock In not found" },
+//         { status: 404 }
+//       );
+//     }
+
+//     // Revert stok sebelum delete
+//     await Promise.all(
+//       toDelete.items.map(({ product_id, quantity }) =>
+//         adjustStock(product_id.toString(), -quantity)
+//       )
+//     );
+
+//     await StockIn.findByIdAndDelete(id);
+
+//     return NextResponse.json({
+//       success: true,
+//       message: "Stock In deleted and stocks reverted",
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return NextResponse.json(
+//       { success: false, message: "Failed to delete", error },
+//       { status: 500 }
+//     );
+//   }
+// }

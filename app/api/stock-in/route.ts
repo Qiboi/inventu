@@ -3,25 +3,32 @@ import connectDB from "@/lib/db";
 import StockIn from "@/models/StockIn";
 import Product from "@/models/Product";
 
-connectDB();
-
 export async function GET() {
+  await connectDB();
+
   try {
-    const stockInList = await StockIn.find().populate("product_id");
+    const stockInList = await StockIn.find()
+    .populate({
+      path: "items.product_id", // Populasi field product_id dalam items
+      select: "name label unit supplier address" // Pilih field yang relevan
+    })
+      .lean(); // Menggunakan lean untuk mendapatkan objek JavaScript biasa
+
+    // console.log(JSON.stringify(stockInList, null, 2));
     return NextResponse.json({ success: true, data: stockInList });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch stock-in data", error },
-      { status: 500 }
-    );
+    console.error("GET Stock-In error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
+
 export async function POST(req: NextRequest) {
+  await connectDB();
+
   try {
     const {
-      product_id,
-      quantity,
+      items,
       draftIn,
       forceNumber,
       destinationLocation,
@@ -29,9 +36,16 @@ export async function POST(req: NextRequest) {
       forceDate,
     } = await req.json();
 
-    const newStockIn = new StockIn({
-      product_id,
-      quantity,
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json(
+        { success: false, message: "`items` array is required" },
+        { status: 400 }
+      );
+    }
+
+    // Simpan stock-in
+    const newStockIn = await StockIn.create({
+      items,
       draftIn,
       forceNumber,
       destinationLocation,
@@ -39,20 +53,25 @@ export async function POST(req: NextRequest) {
       forceDate,
     });
 
-    await newStockIn.save();
+    // Untuk tiap item, increment stock di Product
+    await Promise.all(
+      items.map(({ product_id, quantity }) =>
+        Product.findByIdAndUpdate(
+          product_id,
+          { $inc: { stock: quantity } },
+          { new: true }
+        )
+      )
+    );
 
-    await Product.findByIdAndUpdate(product_id, {
-      $inc: { stock: quantity },
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: newStockIn,
-      message: "Stock In added successfully",
-    });
-  } catch (error) {
     return NextResponse.json(
-      { success: false, message: "Failed to add stock-in data", error },
+      { success: true, data: newStockIn, message: "Stock In added and products updated" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error in POST /api/stock-in:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error", error },
       { status: 500 }
     );
   }
