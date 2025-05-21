@@ -193,7 +193,7 @@ export default function StockInPage() {
     }
 
     const filtered = stockInList.filter((stock) =>
-        stock.items.some(
+        stock.items?.some(
             (item) =>
                 typeof item.product_id === "object" &&
                 item.product_id.name.toLowerCase().includes(search.toLowerCase())
