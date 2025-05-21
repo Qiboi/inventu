@@ -192,12 +192,14 @@ export default function StockInPage() {
         setIsDeleteDialogOpen(false);
     }
 
-    const filtered = stockInList.filter((stock) =>
-        stock.items.some((item) => {
-          if (typeof item.product_id === "object" && item.product_id !== null) {
-            return item.product_id.name
-              .toLowerCase()
-              .includes(search.toLowerCase());
+    const filtered = (stockInList ?? []).filter((stock) =>
+        stock.items?.some((item) => {
+          if (
+            typeof item.product_id === "object" &&
+            item.product_id !== null &&
+            "name" in item.product_id
+          ) {
+            return item.product_id.name.toLowerCase().includes(search.toLowerCase());
           }
           return false;
         })
