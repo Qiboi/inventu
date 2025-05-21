@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
     Plus,
     // Edit, 
@@ -99,6 +99,10 @@ export default function StockInPage() {
         fetchProducts();
     }, [fetchStockIn, fetchProducts]);
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search]);
+
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
         setForm((prev) => ({
@@ -192,26 +196,42 @@ export default function StockInPage() {
         setIsDeleteDialogOpen(false);
     }
 
-    const filtered = (stockInList ?? []).filter((stock) =>
-        stock.items?.some((item) => {
-          if (
-            typeof item.product_id === "object" &&
-            item.product_id !== null &&
-            "name" in item.product_id
-          ) {
-            return item.product_id.name.toLowerCase().includes(search.toLowerCase());
-          }
-          return false;
-        })
-      );
-      
-      // 2. Pagination logic
-      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize)); // Hindari 0 halaman
-      const paginated = filtered.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-      );
-      
+    const filteredList = useMemo(() => {
+        // default ke [] jika stockInList kosong atau bukan array
+        const list = Array.isArray(stockInList) ? stockInList : [];
+        const q = search.trim().toLowerCase();
+
+        if (!q) return list;
+
+        return list.filter((stock) => {
+            // guard items
+            const items = Array.isArray(stock.items) ? stock.items : [];
+            return items.some((item) => {
+                // guard product_id object
+                if (
+                    typeof item.product_id === "object" &&
+                    item.product_id !== null &&
+                    "name" in item.product_id
+                ) {
+                    return item.product_id.name.toLowerCase().includes(q);
+                }
+                return false;
+            });
+        });
+    }, [stockInList, search]);
+
+    // 3.2 Total pages
+    const totalPages = useMemo(() => {
+        return Math.max(1, Math.ceil(filteredList.length / pageSize));
+    }, [filteredList, pageSize]);
+
+    // 3.3 Paginated slice
+    const paginatedList = useMemo(() => {
+        const start = (currentPage - 1) * pageSize;
+        return filteredList.slice(start, start + pageSize);
+    }, [filteredList, currentPage, pageSize]);
+
+
 
     return (
         <div className="p-6 flex flex-col h-full">
@@ -239,7 +259,7 @@ export default function StockInPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {paginated.map((stock) => (
+                        {paginatedList.map((stock) => (
                             <TableRow key={stock._id}>
                                 <TableCell>{stock.draftIn}</TableCell>
                                 <TableCell>{stock.forceNumber}</TableCell>
@@ -256,19 +276,18 @@ export default function StockInPage() {
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex flex-wrap gap-2">
-                                        {stock.items.map((item, i) => (
-                                            <span
-                                                key={i}
-                                                className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-medium rounded-full"
-                                            >
-                                                {typeof item.product_id === "object"
+                                        {(Array.isArray(stock.items) ? stock.items : []).map((item, i) => {
+                                            const name =
+                                                typeof item.product_id === "object" && item.product_id !== null
                                                     ? item.product_id.name
-                                                    : "–"}{" "}
-                                                <span className="ml-1 text-gray-600 dark:text-gray-400">
-                                                    × {item.quantity}
+                                                    : "–";
+                                            return (
+                                                <span key={i} className="...">
+                                                    {name}
+                                                    <span className="ml-1">× {item.quantity}</span>
                                                 </span>
-                                            </span>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </TableCell>
                                 <TableCell className="flex space-x-2">
