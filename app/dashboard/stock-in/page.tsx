@@ -193,17 +193,23 @@ export default function StockInPage() {
     }
 
     const filtered = stockInList.filter((stock) =>
-        stock.items?.some(
-            (item) =>
-                typeof item.product_id === "object" &&
-                item.product_id.name.toLowerCase().includes(search.toLowerCase())
-        )
-    );
-    const totalPages = Math.ceil(filtered.length / pageSize);
-    const paginated = filtered.slice(
+        stock.items.some((item) => {
+          if (typeof item.product_id === "object" && item.product_id !== null) {
+            return item.product_id.name
+              .toLowerCase()
+              .includes(search.toLowerCase());
+          }
+          return false;
+        })
+      );
+      
+      // 2. Pagination logic
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize)); // Hindari 0 halaman
+      const paginated = filtered.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize
-    );
+      );
+      
 
     return (
         <div className="p-6 flex flex-col h-full">
