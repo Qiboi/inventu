@@ -231,7 +231,7 @@ export default function StockInPage() {
         return filteredList.slice(start, start + pageSize);
     }, [filteredList, currentPage, pageSize]);
 
-
+    console.log("PREVIEW : ", previewData);
 
     return (
         <div className="p-6 flex flex-col h-full">
@@ -453,35 +453,39 @@ export default function StockInPage() {
                         <div>
                             <h3 className="text-sm font-medium mb-2">Products</h3>
                             <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {previewData?.items.map((item, i) => (
-                                    <div
-                                        key={i}
-                                        className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md grid grid-cols-[1fr_auto] gap-4 text-sm"
-                                    >
-                                        <div>
-                                            <div className="font-medium">
-                                                {typeof item.product_id === "object"
-                                                    ? item.product_id.name
-                                                    : "-"}
+                            {Array.isArray(previewData?.items) && previewData.items.length > 0 ? (
+  previewData.items.map((item, i) => (
+                                        <div
+                                            key={i}
+                                            className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md grid grid-cols-[1fr_auto] gap-4 text-sm"
+                                        >
+                                            <div>
+                                                <div className="font-medium">
+                                                    {typeof item.product_id === "object" ? item.product_id.name : "-"}
+                                                </div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {typeof item.product_id === "object"
+                                                        ? `Label: ${item.product_id.label} • Unit: ${item.product_id.unit}`
+                                                        : ""}
+                                                </div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {typeof item.product_id === "object"
+                                                        ? `Supplier: ${item.product_id.supplier}, ${item.product_id.address}`
+                                                        : ""}
+                                                </div>
                                             </div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                {typeof item.product_id === "object"
-                                                    ? `Label: ${item.product_id.label} • Unit: ${item.product_id.unit}`
-                                                    : ""}
-                                            </div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                {typeof item.product_id === "object"
-                                                    ? `Supplier: ${item.product_id.supplier}, ${item.product_id.address}`
-                                                    : ""}
+                                            <div className="flex items-center">
+                                                <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs rounded-full">
+                                                    Qty: {item.quantity}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div className="flex items-center">
-                                            <span className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs rounded-full">
-                                                Qty: {item.quantity}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))
+                                ) : (
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Tidak ada item untuk ditampilkan
+                                  </p>
+                                )}
                             </div>
                         </div>
                     </div>
